@@ -1,0 +1,140 @@
+#include <stdio.h>
+#include <conio.h>
+#include <locale.h>
+
+#define EMPLEADOS 6
+
+void cargarDatos(int codigo[], float sueldo[], int *datos);
+void mostrarDatos(int codigo[], float sueldo[], int datos);
+int mostrarMenu();
+void pausa();
+void mayorMenor(int *mayor, int *menor, float sueldo[], int codigo[], int datos);
+void guardarDatos(int codigo[], float sueldo[], int datos);
+
+main(){
+	
+	setlocale (LC_ALL, "spanish");
+	
+	int codigo[EMPLEADOS] = {};
+	float sueldo[EMPLEADOS] = {};
+	int menu, datos = 0, mayor, menor;
+	
+	do{
+		menu = mostrarMenu();
+		switch(menu){
+			case 1:
+				cargarDatos(codigo, sueldo, &datos);
+				break;
+			case 2:
+				mostrarDatos(codigo, sueldo, datos);
+				pausa();
+				break;
+			case 3:
+				mayorMenor(&mayor, &menor, sueldo, codigo, datos);
+				pausa();
+				break;
+			case 4:
+				guardarDatos(codigo, sueldo, datos);
+				pausa();
+				break;
+		}	
+		
+	} while (menu != 5);
+}
+
+
+void cargarDatos(int codigo[], float sueldo[], int *datos){
+	int i;
+	*datos = 1;
+	
+	for (i=0; i<EMPLEADOS; i++){
+		system("cls");
+		printf("Ingresar código %d:\n", i+1);
+		scanf("%d", &codigo[i]);
+		
+		printf("\nIngresar sueldo del empleado con código %d:\n", codigo[i]);
+		scanf("%f", &sueldo[i]);
+	}
+}
+
+void guardarDatos(int codigo[], float sueldo[], int datos){
+	system("cls");
+	
+	if (datos == 0){
+		printf("Todavía no se ingresaron datos\n\n");
+		return;
+	}
+	
+	FILE *archivoEmpleados;
+	
+	archivoEmpleados = fopen("empleados.txt","w");
+	
+	int i;
+	if (archivoEmpleados != NULL){
+		for (i=0; i<EMPLEADOS; i++){
+			fprintf(archivoEmpleados, "Código: %d. Sueldo: $%.2f.\n\n",codigo[i],sueldo[i]);
+		}
+		printf("Datos guardados.\n\n");
+	} else {
+		printf("No se pudieron guardar los datos.\n\n");		
+	}
+	
+	fclose(archivoEmpleados);
+}
+
+void mayorMenor(int *mayor, int *menor, float sueldo[], int codigo[], int datos){
+	system("cls");
+	if (datos == 0){
+		printf("Todavía no se ingresaron datos\n\n");
+		return;
+	}
+	
+	//El mayor y el menor sueldo es la persona en la posicion 0 hasta que se pruebe lo contrario
+	*mayor = 0;
+	*menor = 0;
+	
+	int i;
+	for (i=1; i<EMPLEADOS; i++){
+		if (sueldo[i] > sueldo[*mayor])
+			*mayor = i;
+			
+		if (sueldo[i] < sueldo[*menor])
+			*menor = i;
+	}
+	
+	printf("Empleado con mayor sueldo:\nCódigo: %d.\nSueldo: $%.2f.\n\n", codigo[*mayor], sueldo[*mayor]);
+	printf("Empleado con menor sueldo:\nCódigo: %d.\nSueldo: $%.2f.\n\n", codigo[*menor], sueldo[*menor]);
+}
+
+void mostrarDatos(int codigo[], float sueldo[], int datos){
+	system("cls");
+	if (datos == 0){
+		printf("Todavía no se ingresaron datos\n\n");
+		return;
+	}
+	
+	//Mostrar datos en los vectores;
+	int i;
+	for (i=0; i<EMPLEADOS; i++)
+		printf("%d. Código %d. Sueldo: $%.2f\n\n", i+1, codigo[i], sueldo[i]);
+}
+
+int mostrarMenu(){
+	int menuOp;
+	
+	system("cls");
+	printf("1) Cargar datos de empleados.\n");
+	printf("2) Mostrar datos de empleados.\n");
+	printf("3) Mostrar mayor y menor sueldo.\n");
+	printf("4) Guardar datos.\n");
+	printf("5) Salir.\n");
+	
+	scanf("%d", &menuOp);
+	
+	return menuOp;
+}
+
+void pausa(){
+	system("pause");
+}
+
